@@ -1,0 +1,14 @@
+<!DOCTYPE html><meta charset="utf-8"><title>Trasferimento screenshot</title>
+<p id="s">Preparo gli screenshot…</p>
+<script>
+const set = new URLSearchParams(location.search).get('set') || 'iphone';
+const nomi = ['1-home','2-calendario','3-beni','4-garage','5-catalogo','6-dettaglio'].map(n => `${set}-${n}.png`);
+(async () => {
+  const files = [];
+  for (const n of nomi) files.push({ name: n, buf: await (await fetch(n, { cache: 'no-store' })).arrayBuffer() });
+  if (!window.opener) { document.getElementById('s').textContent = 'Nessuna finestra di origine.'; return; }
+  window.opener.postMessage({ tipo: 'screenshot', set, files }, 'https://appstoreconnect.apple.com', files.map(f => f.buf));
+  document.getElementById('s').textContent = 'Inviati ' + files.length + ' screenshot. Puoi chiudere questa scheda.';
+  setTimeout(() => window.close(), 1500);
+})();
+</script>
